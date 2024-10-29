@@ -1,0 +1,90 @@
+<%- include('./header.ejs'); %>
+    <%- include('./adminHeader.ejs'); %>
+
+
+        <div class="container mt-4">
+            <h2>Ürün Ekle</h2>
+            <form id="addProductForm" action="/add-product" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Ürün Adı:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Fiyat:</label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Açıklama:</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+
+                </div>
+                <div class="form-group">
+                    <label for="image">Görsel Yükle:</label>
+                    <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
+                </div>
+                <div class="d-flex" style="column-gap: 10px;" >
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                    <div id="error-message" class="text-danger mt-2" style="display: none;"></div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('addProductForm').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Formun normal gönderimini engelle
+
+                const formData = new FormData(this); // Form verilerini al
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.style.display = 'none'; // Hata mesajını gizle
+
+                // Ürün adı kontrolü
+                const nameInput = document.getElementById('name');
+                if (!nameInput.value.trim()) {
+                    errorMessage.innerText = 'Ürün adı boş bırakılamaz.'; // Hata mesajını ayarla
+                    errorMessage.style.display = 'block'; // Hata mesajını göster
+                    return; // Form gönderimini durdur
+                }
+
+                // Fiyat kontrolü
+                const priceInput = document.getElementById('price');
+                if (parseFloat(priceInput.value) <= 0) {
+                    errorMessage.innerText = 'Fiyat 0\'dan büyük olmalıdır.'; // Hata mesajını ayarla
+                    errorMessage.style.display = 'block'; // Hata mesajını göster
+                    return; // Form gönderimini durdur
+                }
+
+                // Açıklama kontrolü
+                const descriptionInput = document.getElementById('description');
+                if (!descriptionInput.value.trim()) {
+                    errorMessage.innerText = 'Açıklama boş bırakılamaz.'; // Hata mesajını ayarla
+                    errorMessage.style.display = 'block'; // Hata mesajını göster
+                    return; // Form gönderimini durdur
+                }
+
+                // Fotoğrafın seçilip seçilmediğini kontrol et
+                const imageInput = document.getElementById('image');
+                if (!imageInput.files.length) {
+                    errorMessage.innerText = 'Lütfen bir fotoğraf yükleyin.'; // Hata mesajını ayarla
+                    errorMessage.style.display = 'block'; // Hata mesajını göster
+                    return; // Form gönderimini durdur
+                }
+
+                try {
+                    const response = await fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const data = await response.json();
+                        errorMessage.innerText = data.error; // Sunucudan gelen hata mesajını ayarla
+                        errorMessage.style.display = 'block'; // Hata mesajını göster
+                    } else {
+                        // Başarılı ise yönlendirme
+                        window.location.href = '/admin'; // Başarılı ise admin sayfasına yönlendir
+                    }
+                } catch (error) {
+                    console.error('Hata:', error);
+                }
+            });
+        </script>

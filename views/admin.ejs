@@ -1,0 +1,52 @@
+<%- include('./header.ejs'); %>
+    <%- include('./adminHeader.ejs'); %>
+
+        <div class="container mt-4 ">
+
+            <div class="d-flex justify-content-between mb-2 align-items-center">
+                <h4>Ürünler</h2>
+                    <a class="btn btn-success" href="/urunekle">Ürün Ekle</a>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th>Fiyat</th>
+                        <th>Açıklama</th>
+                        <th>Görsel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(product=> { %>
+                        <tr>
+                            <td>
+                                <%= product.name %>
+                            </td>
+                            <td>
+                                <%= product.price.toFixed(2) %> TL
+                            </td>
+                            <td>
+                                <%= product.description %>
+                            </td>
+                            <td>
+                                <a href="<%= product.imageUrl %>"> <!-- Ürün sayfasına yönlendirme -->
+                                    <img src="<%= product.imageUrl %>" alt="<%= product.name %>"
+                                        style="width: 100px; height: auto; cursor: pointer;">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="/urun/<%= product.id %>" class="btn btn-primary">
+                                    <!-- Ürün sayfasına yönlendirme -->
+                                    güncelle
+                                </a>
+
+                                <form action="/product/delete/<%= product.id %>" method="POST" style="display:inline;"
+                                    onsubmit="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">
+                                    <button type="submit" class="btn btn-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        </div>
